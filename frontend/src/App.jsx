@@ -1,44 +1,19 @@
-import { useState, useEffect } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
+import Login from "./Login";
+import SignUp from "./SignUp";
+import ForgotPassword from "./ForgotPassword";
+import { useState } from 'react';
 import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0);
-  const [message, setMessage] = useState('');
+  const [page, setPage] = useState('login');
 
-  useEffect(() => {
-    fetch('/api/hello')
-      .then((res) => res.text())
-      .then((text) => setMessage(text))
-      .catch((err) => console.error('Failed to fetch:', err));
-  }, []);
-
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <h2>Message from backend: {message}</h2>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  );
+  if (page === 'signup') {
+    return <SignUp onSwitchToLogin={() => setPage('login')} />;
+  }
+  if (page === 'forgot') {
+    return <ForgotPassword onSwitchToLogin={() => setPage('login')} />;
+  }
+  return <Login onSwitchToSignUp={() => setPage('signup')} onSwitchToForgot={() => setPage('forgot')} />;
 }
 
 export default App;
