@@ -17,6 +17,12 @@ const SignUp = ({ onSwitchToLogin }) => {
     setError("");
     // TODO: Add sign up logic here
     alert(`Signing up as ${username} (${email})`);
+
+    axios.post("/api/auth/signup", {
+        username,
+        email,
+        password
+    });
   };
 
   return (
