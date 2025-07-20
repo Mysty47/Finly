@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import "./Login.css";
+import axios from "axios";
+
+
 
 const SignUp = ({ onSwitchToLogin }) => {
   const [username, setUsername] = useState("");
@@ -8,22 +11,36 @@ const SignUp = ({ onSwitchToLogin }) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
       setError("Passwords do not match");
       return;
     }
-    setError("");
-    // TODO: Add sign up logic here
-    alert(`Signing up as ${username} (${email})`);
 
-    axios.post("/api/auth/signup", {
+    setError("");
+
+    try {
+      const response = await axios.post("http://localhost:8081/api/auth/signup", {
         username,
         email,
         password
-    });
+      });
+
+      alert(response.data); // Отговор от Spring Boot
+
+    } catch (err) {
+        console.error("Signup error:", err);  // Виждаш целия обект на грешката в конзолата
+        if (err.response && err.response.status === 409) {
+          setError("User already exists");
+        } else if (err.response) {
+          setError(`Signup failed: ${err.response.status} ${err.response.data}`);
+        } else {
+          setError("Signup failed. Please try again.");
+        }
+      }
   };
+
 
   return (
     <div className="login-container">
