@@ -1,6 +1,8 @@
 package com.example.finly.controller;
 
 import com.example.finly.service.FirebaseService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +14,7 @@ import java.util.Map;
 @RequestMapping("/api/users")
 public class UserController {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
     @Autowired
     private FirebaseService firebaseService;
 
@@ -19,11 +22,11 @@ public class UserController {
     @PostMapping("/{id}")
     public ResponseEntity<?> saveUser(@PathVariable String id, @RequestBody Map<String, Object> data) {
         try {
-            System.out.println("Starting the save of the user: " + id);
+            logger.info("Starting to save the user: " + id);
             String updateTime = firebaseService.saveUser(id, data);
             return ResponseEntity.ok(updateTime);
         } catch (Exception e) {
-            System.err.println("Error with saving into the firebase: " + e.getMessage());
+            logger.info("Error with saving into the firebase: " + e.getMessage());
             e.printStackTrace(); // показва пълния stacktrace
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }

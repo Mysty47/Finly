@@ -21,7 +21,7 @@ const SignUp = ({ onSwitchToLogin }) => {
     setError("");
 
     try {
-      const response = await axios.post("http://localhost:8081/api/auth/signup", {
+      const response = await axios.post("http://localhost:8081/api/users/signup", {
         username,
         email,
         password

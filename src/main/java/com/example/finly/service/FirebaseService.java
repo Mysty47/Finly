@@ -3,6 +3,8 @@ package com.example.finly.service;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -10,6 +12,8 @@ import java.util.concurrent.ExecutionException;
 
 @Service
 public class FirebaseService {
+
+    private static final Logger logger = LoggerFactory.getLogger(FirebaseService.class);
 
     //Saving user into firestore
     public String saveUser(String id, Map<String, Object> data) throws ExecutionException, InterruptedException {
