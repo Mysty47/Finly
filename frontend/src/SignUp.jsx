@@ -27,7 +27,7 @@ const SignUp = ({ onSwitchToLogin }) => {
         password
       });
 
-      alert(response.data); // Отговор от Spring Boot
+      alert("Successfully signed up");
 
     } catch (err) {
         console.error("Signup error:", err);  // Виждаш целия обект на грешката в конзолата

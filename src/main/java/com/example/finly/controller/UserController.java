@@ -23,7 +23,7 @@ public class UserController {
     public ResponseEntity<?> saveUser(@PathVariable String id, @RequestBody Map<String, Object> data) {
         try {
             logger.info("Starting to save the user: " + id);
-            String updateTime = firebaseService.saveUser(id, data);
+            String updateTime = firebaseService.saveUser(data);
             return ResponseEntity.ok(updateTime);
         } catch (Exception e) {
             logger.info("Error with saving into the firebase: " + e.getMessage());
