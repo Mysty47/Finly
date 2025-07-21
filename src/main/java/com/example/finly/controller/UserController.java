@@ -19,10 +19,10 @@ public class UserController {
     private FirebaseService firebaseService;
 
     //POST request for saving a user's info into firestore
-    @PostMapping("/{id}")
-    public ResponseEntity<?> saveUser(@PathVariable String id, @RequestBody Map<String, Object> data) {
+    @PostMapping("/signup")
+    public ResponseEntity<?> saveUser(@RequestBody Map<String, Object> data) {
         try {
-            logger.info("Starting to save the user: " + id);
+            logger.info("Starting to save the user");
             String updateTime = firebaseService.saveUser(data);
             return ResponseEntity.ok(updateTime);
         } catch (Exception e) {
