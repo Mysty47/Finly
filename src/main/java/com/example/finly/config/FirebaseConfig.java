@@ -13,6 +13,7 @@ import java.io.InputStream;
 public class FirebaseConfig {
 
     @PostConstruct
+    //Configuring firestore
     public void initFirebase() throws IOException {
         InputStream serviceAccount = getClass().getClassLoader()
                 .getResourceAsStream("firebase-service-account.json");

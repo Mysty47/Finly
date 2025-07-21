@@ -6,6 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
+//DTO for user's info
 public class SignupRequestDTO {
     private String username;
     private String email;

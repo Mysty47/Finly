@@ -9,6 +9,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig {
 
     @Bean
+    //Allows REACT to send requests to springboot
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override

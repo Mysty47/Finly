@@ -15,20 +15,21 @@ public class UserController {
     @Autowired
     private FirebaseService firebaseService;
 
+    //POST request for saving a user's info into firestore
     @PostMapping("/{id}")
     public ResponseEntity<?> saveUser(@PathVariable String id, @RequestBody Map<String, Object> data) {
         try {
-            System.out.println("🔄 Започваме запис за потребител: " + id);
+            System.out.println("Starting the save of the user: " + id);
             String updateTime = firebaseService.saveUser(id, data);
             return ResponseEntity.ok(updateTime);
         } catch (Exception e) {
-            System.err.println("❌ Грешка при запис в Firebase: " + e.getMessage());
+            System.err.println("Error with saving into the firebase: " + e.getMessage());
             e.printStackTrace(); // показва пълния stacktrace
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
-
+    // GET request for searching user by id
     @GetMapping("/{id}")
     public Map<String, Object> getUser(@PathVariable String id) throws Exception {
         return firebaseService.getUser(id);
