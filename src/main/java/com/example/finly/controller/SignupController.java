@@ -1,6 +1,6 @@
 package com.example.finly.controller;
 
-import com.example.finly.service.FirebaseService;
+import com.example.finly.service.SignupService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,22 +12,27 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
-public class UserController {
+public class SignupController {
 
-    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+    private static final Logger logger = LoggerFactory.getLogger(SignupController.class);
+
     @Autowired
-    private FirebaseService firebaseService;
+    private final SignupService signupService;
+
+    public SignupController(SignupService signupService) {
+        this.signupService = signupService;
+    }
 
     //POST request for saving a user's info into firestore
     @PostMapping("/signup")
     public ResponseEntity<?> saveUser(@RequestBody Map<String, Object> data) {
         try {
             logger.info("Starting to save the user");
-            String updateTime = firebaseService.saveUser(data);
+            String updateTime = signupService.saveUser(data);
             return ResponseEntity.ok(updateTime);
         } catch (Exception e) {
             logger.info("Error with saving into the firebase: " + e.getMessage());
-            e.printStackTrace(); // показва пълния stacktrace
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
@@ -35,6 +40,6 @@ public class UserController {
     // GET request for searching user by id
     @GetMapping("/{id}")
     public Map<String, Object> getUser(@PathVariable String id) throws Exception {
-        return firebaseService.getUser(id);
+        return signupService.getUser(id);
     }
 }

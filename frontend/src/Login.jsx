@@ -1,16 +1,30 @@
 import React, { useState } from "react";
 import "./Login.css";
+import axios from "axios";
 
 const Login = ({ onSwitchToSignUp, onSwitchToForgot }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Add authentication logic here
-    alert(`Logging in as ${email}`);
+    try {
+      const response = await axios.post("http://localhost:8081/api/users/login", {
+        email,
+        password
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      alert(response.data);
+    } catch (err) {
+      console.error("Login error:", err);
+    }
   };
+
 
   return (
     <div className="login-container">

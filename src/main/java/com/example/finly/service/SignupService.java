@@ -7,12 +7,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 @Service
-public class FirebaseService {
+public class SignupService {
 
     // Saving user into firestore
     public String saveUser(Map<String, Object> data) throws ExecutionException, InterruptedException {
