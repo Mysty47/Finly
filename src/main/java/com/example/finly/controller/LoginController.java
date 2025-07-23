@@ -31,7 +31,7 @@ public class LoginController {
             boolean success = loginService.login(loginDTO.getEmail(), loginDTO.getPassword());
 
             if(success) {
-                return ResponseEntity.ok("Login Successfull");
+                return ResponseEntity.ok(loginDTO.getUsername());
             } else {
                 return ResponseEntity.status(401).body("Invalid credentials");
             }
