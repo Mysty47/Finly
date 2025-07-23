@@ -28,10 +28,10 @@ public class LoginController {
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginDTO loginDTO) {
         try {
-            boolean success = loginService.login(loginDTO.getEmail(), loginDTO.getPassword());
+            String username = loginService.login(loginDTO.getEmail(), loginDTO.getPassword());
 
-            if(success) {
-                return ResponseEntity.ok(loginDTO.getUsername());
+            if(username != null) {
+                return ResponseEntity.ok(username);
             } else {
                 return ResponseEntity.status(401).body("Invalid credentials");
             }

@@ -15,7 +15,7 @@ public class LoginService {
 
     private static final Logger logger = LoggerFactory.getLogger(LoginService.class);
 
-    public boolean login(String email, String password) throws Exception {
+    public String login(String email, String password) throws Exception {
         Firestore db = FirestoreClient.getFirestore();
         CollectionReference users = db.collection("users");
 
@@ -24,12 +24,16 @@ public class LoginService {
         List<QueryDocumentSnapshot> documents = query.get().getDocuments();
 
         if(documents.isEmpty()) {
-            return false;
+            return null;
         }
 
         DocumentSnapshot userDoc = documents.get(0);
         String storedPassword = userDoc.getString("password");
 
-        return storedPassword != null && storedPassword.equals(password);
+        if(storedPassword != null && storedPassword.equals(password)) {
+            return userDoc.getString("username");
+        } else {
+            return null;
+        }
     }
 }
