@@ -5,6 +5,7 @@ import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +16,15 @@ public class LoginService {
 
     private static final Logger logger = LoggerFactory.getLogger(LoginService.class);
 
+    @Autowired
+    private final HashString hashString;
+
+    // Dependency Injection
+    public LoginService(HashString hashString) {
+        this.hashString = hashString;
+    }
+
+    // Compare the users credentials to the provided one
     public String login(String email, String password) throws Exception {
         Firestore db = FirestoreClient.getFirestore();
         CollectionReference users = db.collection("users");
@@ -27,10 +37,12 @@ public class LoginService {
             return null;
         }
 
+
+
         DocumentSnapshot userDoc = documents.get(0);
         String storedPassword = userDoc.getString("password");
 
-        if(storedPassword != null && storedPassword.equals(password)) {
+        if(storedPassword != null && hashString.CheckHashedString(password, storedPassword)) {
             return userDoc.getString("username");
         } else {
             return null;

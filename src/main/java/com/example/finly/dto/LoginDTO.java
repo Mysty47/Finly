@@ -6,6 +6,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
+// DTO for login compare
 public class LoginDTO {
     private String username;
     private String email;

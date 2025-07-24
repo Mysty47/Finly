@@ -20,11 +20,13 @@ public class LoginController {
 
     private final LoginService loginService;
 
+    // Dependency Injection
     @Autowired
     public LoginController(LoginService loginService) {
         this.loginService = loginService;
     }
 
+    // POST Request for comparing provided data to the one in firestore
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginDTO loginDTO) {
         try {

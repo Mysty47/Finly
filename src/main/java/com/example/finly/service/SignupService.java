@@ -3,6 +3,7 @@ package com.example.finly.service;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -13,6 +14,14 @@ import java.util.concurrent.ExecutionException;
 @Service
 public class SignupService {
 
+    @Autowired
+    private final HashString hashString;
+
+    // Dependency Injection
+    public SignupService(HashString hashString) {
+        this.hashString = hashString;
+    }
+
     // Saving user into firestore
     public String saveUser(Map<String, Object> data) throws ExecutionException, InterruptedException {
         Firestore db = FirestoreClient.getFirestore();
@@ -21,6 +30,14 @@ public class SignupService {
         if (email == null || email.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is required");
         }
+
+        String plainPassword = (String) data.get("password");
+        if (plainPassword == null || plainPassword.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password is required");
+        }
+
+        String hashedPassword = hashString.hashPassword(plainPassword);
+        data.put("password", hashedPassword);
 
         CollectionReference usersRef = db.collection("users");
         Query query = usersRef.whereEqualTo("email", email);
