@@ -49,7 +49,8 @@ public class SignupService {
 
         data.put("createdAt", FieldValue.serverTimestamp());
 
-        DocumentReference ref = usersRef.add(data).get();
+        DocumentReference ref = usersRef.document(email); // The name of the document in firestore is set to the email
+        ref.set(data).get();
         return ref.getId();
     }
 
