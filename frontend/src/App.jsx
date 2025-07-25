@@ -63,11 +63,21 @@ function Header({ onLoginClick , onHomeClick , onUsernameClick , username}) {
       margin: 0,
       boxSizing: "border-box"
     }}>
-      <div style={{ fontWeight: "bold", fontSize: "1.5rem", color: "#f3f4f6", letterSpacing: "1px", cursor: 'pointer' }} onClick={onHomeClick} tabIndex={0} aria-label="Home" role="button" onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') onHomeClick(); }}>
+      <div
+        style={{ fontWeight: "bold", fontSize: "1.5rem", color: "#f3f4f6", letterSpacing: "1px", cursor: 'pointer' }}
+        onClick={onHomeClick}
+        tabIndex={0}
+        aria-label="Home"
+        role="button"
+        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') onHomeClick(); }}
+      >
         Finly
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#f3f4f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M21 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/></svg>
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#f3f4f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="8" r="4"/>
+          <path d="M21 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/>
+        </svg>
         <button
           style={{
             ...loginLinkStyle,
@@ -99,16 +109,30 @@ function App() {
   } else if (page === 'forgot') {
     pageContent = <ForgotPassword onSwitchToLogin={() => setPage('login')} />;
   } else if (page === 'login') {
-    pageContent = <Login onSwitchToSignUp={() => setPage('signup')} onSwitchToForgot={() => setPage('forgot')} onLoginSuccess={(usernameFromServer) => {setUsername(usernameFromServer); setPage('home');}} />;
+    pageContent = (
+      <Login
+        onSwitchToSignUp={() => setPage('signup')}
+        onSwitchToForgot={() => setPage('forgot')}
+        onLoginSuccess={(data) => {
+          setUsername(data.username); // <-- Взимаш само username от обекта
+          setPage('home');
+        }}
+      />
+    );
   } else if (page === 'settings') {
-     pageContent = (<UserSettings onBack={() => setPage('home')}/>);
-   }  else {
+    pageContent = <UserSettings onBack={() => setPage('home')} />;
+  } else {
     pageContent = <HomePage />;
   }
 
   return (
     <>
-      <Header onLoginClick={() => setPage('login')} onHomeClick={() => setPage('home')}  onUsernameClick={() => setPage('settings')} username = {usernameFromServer}/>
+      <Header
+        onLoginClick={() => setPage('login')}
+        onHomeClick={() => setPage('home')}
+        onUsernameClick={() => setPage('settings')}
+        username={usernameFromServer}
+      />
       <div style={{ paddingTop: "3.5rem" }}>
         {pageContent}
       </div>

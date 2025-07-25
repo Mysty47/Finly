@@ -12,12 +12,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("api/users")
 public class LoginController {
 
+    // LOGGER
     private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
 
+    @Autowired
     private final LoginService loginService;
 
     // Dependency Injection
@@ -28,12 +33,16 @@ public class LoginController {
 
     // POST Request for comparing provided data to the one in firestore
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginDTO loginDTO) {
+    public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) {
         try {
             String username = loginService.login(loginDTO.getEmail(), loginDTO.getPassword());
 
             if(username != null) {
-                return ResponseEntity.ok(username);
+                Map<String, String> response = new HashMap<>();
+                response.put("username", username);
+                response.put("email", loginDTO.getEmail());
+
+                return ResponseEntity.ok(response);
             } else {
                 return ResponseEntity.status(401).body("Invalid credentials");
             }

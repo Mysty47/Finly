@@ -7,27 +7,34 @@ const Login = ({ onSwitchToSignUp, onSwitchToForgot, onLoginSuccess  }) => {
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post("http://localhost:8081/api/users/login", {
-        email,
-        password
-      }, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-      alert(response.data);
+  try {
+    const response = await axios.post("http://localhost:8081/api/users/login", {
+      email,
+      password
+    }, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
 
-       if (onLoginSuccess && response.data) {
-              onLoginSuccess(response.data);
-       }
-    } catch (err) {
-      console.error("Login error:", err);
+    console.log("Full login response data:", response.data);
+
+    localStorage.setItem("userEmail", response.data.email);
+    localStorage.setItem("username", response.data.username);
+
+    alert("Login successful");
+
+    if (onLoginSuccess && response.data) {
+      onLoginSuccess(response.data);
     }
-  };
+  } catch (err) {
+    console.error("Login error:", err);
+  }
+};
+
 
 
   return (

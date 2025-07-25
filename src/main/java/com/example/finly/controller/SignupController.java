@@ -14,12 +14,14 @@ import java.util.Map;
 @RequestMapping("/api/users")
 public class SignupController {
 
+    // LOGGER
     private static final Logger logger = LoggerFactory.getLogger(SignupController.class);
 
     @Autowired
     private final SignupService signupService;
 
     // Dependency Injection
+    @Autowired
     public SignupController(SignupService signupService) {
         this.signupService = signupService;
     }

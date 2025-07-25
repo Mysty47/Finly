@@ -20,6 +20,8 @@ const SignUp = ({ onSwitchToLogin }) => {
 
     setError("");
 
+    console.log("Sending Signup:", { username, email });
+
     try {
       const response = await axios.post("http://localhost:8081/api/users/signup", {
         username,
@@ -27,6 +29,8 @@ const SignUp = ({ onSwitchToLogin }) => {
         password
       });
 
+      localStorage.setItem("userEmail", email);
+      localStorage.setItem("username", username);
       alert("Successfully signed up");
 
     } catch (err) {

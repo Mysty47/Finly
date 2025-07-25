@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react"; // 🟢 Импортираш useEffect!
 import "./Settings.css";
+import axios from "axios";
 
 const UserSettings = ({ onBack }) => {
   const [username, setUsername] = useState("");
@@ -7,46 +8,82 @@ const UserSettings = ({ onBack }) => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const updateUsername = () => {
+  useEffect(() => {
+    const savedEmail = localStorage.getItem("userEmail");
+    if (savedEmail) {
+      setEmail(savedEmail);
+    }
+  }, []);
+
+  const updateUsername = async () => {
     if (!username.trim()) {
       alert("Username cannot be empty.");
       return;
     }
-    console.log("Updated username:", username);
-    alert("Username updated!");
-    // TODO: Send to backend
+
+    console.log("Sending UserSettings:", { username, email });
+
+    try {
+      const response = await axios.put("http://localhost:8081/api/users/settings/username", {
+        username,
+        email,
+      });
+
+      alert("Username updated!");
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+      alert("Failed to update username.");
+    }
   };
 
-  const updateEmail = () => {
+  const updateEmail = async () => {
     if (!email.trim()) {
       alert("Email cannot be empty.");
       return;
     }
 
-    // Basic email format check
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       alert("Please enter a valid email address.");
       return;
     }
 
-    console.log("Updated email:", email);
-    alert("Email updated!");
-    // TODO: Send to backend
+    try {
+      const response = await axios.put("http://localhost:8081/api/users/settings/email", {
+        email,
+      });
+
+      alert("Email updated!");
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+      alert("Failed to update email.");
+    }
   };
 
-  const updatePassword = () => {
+  const updatePassword = async () => {
     if (!newPassword || !confirmPassword) {
       alert("Please fill in both password fields.");
       return;
     }
+
     if (newPassword !== confirmPassword) {
       alert("Passwords do not match.");
       return;
     }
-    console.log("Updated password:", newPassword);
-    alert("Password updated!");
-    // TODO: Send to backend
+
+    try {
+      const response = await axios.put("http://localhost:8081/api/users/settings/password", {
+        password: newPassword,
+      });
+
+      alert("Password updated!");
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+      alert("Failed to update password.");
+    }
   };
 
   return (
@@ -62,7 +99,9 @@ const UserSettings = ({ onBack }) => {
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
-        <button type="button" onClick={updateUsername}>Update Username</button>
+        <button type="button" onClick={updateUsername}>
+          Update Username
+        </button>
 
         <h3>Email</h3>
         <input
@@ -71,7 +110,9 @@ const UserSettings = ({ onBack }) => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
-        <button type="button" onClick={updateEmail}>Update Email</button>
+        <button type="button" onClick={updateEmail}>
+          Update Email
+        </button>
 
         <h3>Password</h3>
         <input
@@ -86,10 +127,18 @@ const UserSettings = ({ onBack }) => {
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
         />
-        <button type="button" onClick={updatePassword}>Update Password</button>
+        <button type="button" onClick={updatePassword}>
+          Update Password
+        </button>
 
         <div className="signup-link" style={{ marginTop: "1rem" }}>
-          <a href="#" onClick={(e) => { e.preventDefault(); onBack(); }}>
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              onBack();
+            }}
+          >
             ← Back to Home
           </a>
         </div>
