@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./Login.css";
 import axios from "axios";
 
-const Login = ({ onSwitchToSignUp, onSwitchToForgot }) => {
+const Login = ({ onSwitchToSignUp, onSwitchToForgot, onLoginSuccess  }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
@@ -20,6 +20,10 @@ const Login = ({ onSwitchToSignUp, onSwitchToForgot }) => {
       });
 
       alert(response.data);
+
+       if (onLoginSuccess && response.data) {
+              onLoginSuccess(response.data);
+       }
     } catch (err) {
       console.error("Login error:", err);
     }

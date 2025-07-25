@@ -1,6 +1,7 @@
 import Login from "./Login";
 import SignUp from "./SignUp";
 import ForgotPassword from "./ForgotPassword";
+import UserSettings from "./UserSettings";
 import { useState } from 'react';
 import './App.css';
 import React from "react";
@@ -32,7 +33,7 @@ function HomePage() {
   );
 }
 
-function Header({ onLoginClick, onHomeClick }) {
+function Header({ onLoginClick , onHomeClick , onUsernameClick , username}) {
   // Inline style for the link
   const loginLinkStyle = {
     fontSize: "1rem",
@@ -73,7 +74,7 @@ function Header({ onLoginClick, onHomeClick }) {
             textDecoration: isHovered || isFocused ? "underline" : "none",
             color: "#f3f4f6"
           }}
-          onClick={onLoginClick}
+          onClick={username ? onUsernameClick : onLoginClick}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
           onFocus={() => setIsFocused(true)}
@@ -81,7 +82,7 @@ function Header({ onLoginClick, onHomeClick }) {
           tabIndex={0}
           aria-label="Log in"
         >
-          Log in
+          {username ? username : 'Log in'}
         </button>
       </div>
     </header>
@@ -90,6 +91,7 @@ function Header({ onLoginClick, onHomeClick }) {
 
 function App() {
   const [page, setPage] = useState('home');
+  const [usernameFromServer, setUsername] = useState(null);
 
   let pageContent;
   if (page === 'signup') {
@@ -97,14 +99,16 @@ function App() {
   } else if (page === 'forgot') {
     pageContent = <ForgotPassword onSwitchToLogin={() => setPage('login')} />;
   } else if (page === 'login') {
-    pageContent = <Login onSwitchToSignUp={() => setPage('signup')} onSwitchToForgot={() => setPage('forgot')} />;
-  } else {
+    pageContent = <Login onSwitchToSignUp={() => setPage('signup')} onSwitchToForgot={() => setPage('forgot')} onLoginSuccess={(usernameFromServer) => {setUsername(usernameFromServer); setPage('home');}} />;
+  } else if (page === 'settings') {
+     pageContent = (<UserSettings onBack={() => setPage('home')}/>);
+   }  else {
     pageContent = <HomePage />;
   }
 
   return (
     <>
-      <Header onLoginClick={() => setPage('login')} onHomeClick={() => setPage('home')} />
+      <Header onLoginClick={() => setPage('login')} onHomeClick={() => setPage('home')}  onUsernameClick={() => setPage('settings')} username = {usernameFromServer}/>
       <div style={{ paddingTop: "3.5rem" }}>
         {pageContent}
       </div>
