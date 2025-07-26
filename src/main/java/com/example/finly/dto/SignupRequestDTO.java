@@ -4,9 +4,9 @@ package com.example.finly.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+//DTO for user's info
 @Getter
 @Setter
-//DTO for user's info
 public class SignupRequestDTO {
     private String username;
     private String email;
