@@ -3,6 +3,7 @@ package com.example.finly.controller;
 import com.example.finly.dto.LoginDTO;
 import com.example.finly.service.LoginService;
 import com.example.finly.service.SignupService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +33,7 @@ public class LoginController {
 
     // POST Request for comparing provided data to the one in firestore
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginDTO loginDTO) {
         try {
             String username = loginService.login(loginDTO.getEmail(), loginDTO.getPassword());
 

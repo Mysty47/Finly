@@ -6,9 +6,19 @@ const Login = ({ onSwitchToSignUp, onSwitchToForgot, onLoginSuccess  }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
+  const [errors, setErrors] = useState({});
 
 const handleSubmit = async (e) => {
   e.preventDefault();
+
+  const newErrors = {};
+  if (!email) newErrors.email = "Email is required";
+  if (!password) newErrors.password = "Password is required";
+
+  if (Object.keys(newErrors).length > 0) {
+    setErrors(newErrors);
+    return;
+  }
 
   try {
     const response = await axios.post("http://localhost:8081/api/users/login", {
@@ -32,8 +42,14 @@ const handleSubmit = async (e) => {
     }
   } catch (err) {
     console.error("Login error:", err);
+    if (err.response && err.response.data) {
+      setErrors({ general: err.response.data.message || "Login failed" });
+    } else {
+      setErrors({ general: "Server error. Please try again later." });
+    }
   }
 };
+
 
 
 
@@ -42,6 +58,7 @@ const handleSubmit = async (e) => {
       <form className="login-form" onSubmit={handleSubmit}>
         <h2>Sign in to your account</h2>
         <p className="login-subtitle">Welcome back! Please enter your details.</p>
+        {errors.general && <p className="error-message">{errors.general}</p>}
         <input
           type="email"
           placeholder="Email"
@@ -49,6 +66,7 @@ const handleSubmit = async (e) => {
           onChange={(e) => setEmail(e.target.value)}
           required
         />
+        {errors.email && <p className="error-message">{errors.email}</p>}
         <input
           type="password"
           placeholder="Password"
@@ -56,6 +74,7 @@ const handleSubmit = async (e) => {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
+        {errors.password && <p className="error-message">{errors.password}</p>}
         <div className="login-options">
           <label className="remember-me">
             <input

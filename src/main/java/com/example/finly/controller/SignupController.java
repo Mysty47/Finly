@@ -1,6 +1,7 @@
 package com.example.finly.controller;
 
 import com.example.finly.service.SignupService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +28,7 @@ public class SignupController {
 
     //POST request for saving a user's info into firestore
     @PostMapping("/signup")
-    public ResponseEntity<?> saveUser(@RequestBody Map<String, Object> data) {
+    public ResponseEntity<?> saveUser(@Valid @RequestBody Map<String, Object> data) {
         try {
             log.info("Starting to save the user");
             String updateTime = signupService.saveUser(data);
