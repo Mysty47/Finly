@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 public class HashString {
 
     // BCrypt Method
-    public static String hashPassword(String plainPassword) {
+    public String hashPassword(String plainPassword) {
         return BCrypt.hashpw(plainPassword, BCrypt.gensalt());
     }
 

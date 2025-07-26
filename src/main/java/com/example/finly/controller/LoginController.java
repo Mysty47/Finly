@@ -3,6 +3,7 @@ package com.example.finly.controller;
 import com.example.finly.dto.LoginDTO;
 import com.example.finly.service.LoginService;
 import com.example.finly.service.SignupService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("api/users")
 public class LoginController {
-
-    // LOGGER
-    private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
 
     @Autowired
     private final LoginService loginService;

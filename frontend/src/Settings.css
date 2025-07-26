@@ -89,3 +89,9 @@ html, body, #root {
   background: #5a8dee;
   color: #fff;
 }
+
+.error {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 4px;
+}

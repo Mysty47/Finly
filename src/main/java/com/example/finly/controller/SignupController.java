@@ -1,6 +1,7 @@
 package com.example.finly.controller;
 
 import com.example.finly.service.SignupService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,12 +11,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/users")
 public class SignupController {
-
-    // LOGGER
-    private static final Logger logger = LoggerFactory.getLogger(SignupController.class);
 
     @Autowired
     private final SignupService signupService;
@@ -30,11 +29,11 @@ public class SignupController {
     @PostMapping("/signup")
     public ResponseEntity<?> saveUser(@RequestBody Map<String, Object> data) {
         try {
-            logger.info("Starting to save the user");
+            log.info("Starting to save the user");
             String updateTime = signupService.saveUser(data);
             return ResponseEntity.ok(updateTime);
         } catch (Exception e) {
-            logger.info("Error with saving into the firebase: " + e.getMessage());
+            log.info("Error with saving into the firebase: " + e.getMessage());
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }

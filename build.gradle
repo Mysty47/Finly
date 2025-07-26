@@ -25,8 +25,16 @@ dependencies {
 	// Security
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 
+	// Starter validation
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	// BCrypt
 	implementation 'org.mindrot:jbcrypt:0.4'
+
+	// Firebase
 	implementation 'com.google.firebase:firebase-admin:9.2.0'
+
+	// Spring boot
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

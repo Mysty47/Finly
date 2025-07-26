@@ -3,6 +3,7 @@ package com.example.finly.service;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +12,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Locale;
 
+@Slf4j
 @Service
 public class LoginService {
-
-    private static final Logger logger = LoggerFactory.getLogger(LoginService.class);
 
     @Autowired
     private final HashString hashString;
