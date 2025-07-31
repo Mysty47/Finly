@@ -37,8 +37,6 @@ public class LoginService {
             return null;
         }
 
-
-
         DocumentSnapshot userDoc = documents.get(0);
         String storedPassword = userDoc.getString("password");
 
