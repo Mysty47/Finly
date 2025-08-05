@@ -28,6 +28,10 @@ dependencies {
 	// Starter validation
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
+	// JPA and Database
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	runtimeOnly 'com.h2database:h2'
+
 	// BCrypt
 	implementation 'org.mindrot:jbcrypt:0.4'
 

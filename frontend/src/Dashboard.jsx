@@ -9,24 +9,30 @@ function Dashboard() {
   const [error, setError] = useState(null);
   
   const [showAddTransaction, setShowAddTransaction] = useState(false);
+  const [showAddAccount, setShowAddAccount] = useState(false);
   const [newTransaction, setNewTransaction] = useState({
     description: '',
     amount: '',
     type: 'expense',
     accountId: null
   });
+  const [newAccount, setNewAccount] = useState({
+    name: '',
+    balance: '0'
+  });
 
-  const username = 'demo_user';
+  const userEmail = localStorage.getItem('userEmail') || 'demo_user';
 
   // Fetch accounts from backend
   const fetchAccounts = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:8081/api/accounts/${username}`);
+      const response = await fetch(`http://localhost:8081/api/accounts/${userEmail}`);
       if (!response.ok) {
         throw new Error('Failed to fetch accounts');
       }
       const accountsData = await response.json();
+      console.log('Fetched accounts:', accountsData);
       setAccounts(accountsData);
       if (accountsData.length > 0) {
         setNewTransaction(prev => ({ ...prev, accountId: accountsData[0].id }));
@@ -34,12 +40,8 @@ function Dashboard() {
     } catch (error) {
       console.error('Error fetching accounts:', error);
       setError('Failed to load accounts');
-      // Fallback to demo data
-      setAccounts([
-        { id: 1, name: 'Main Account', balance: 2500.00 },
-        { id: 2, name: 'Savings', balance: 5000.00 },
-        { id: 3, name: 'Emergency Fund', balance: 3000.00 }
-      ]);
+      // Don't use fallback demo data - just set empty array
+      setAccounts([]);
     } finally {
       setLoading(false);
     }
@@ -48,54 +50,69 @@ function Dashboard() {
   // Fetch transactions from backend
   const fetchTransactions = async () => {
     try {
-      const response = await fetch(`http://localhost:8081/api/transactions/${username}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch transactions');
+      // Get transactions for the current account
+      if (accounts.length > 0 && currentAccountIndex < accounts.length) {
+        const currentAccount = accounts[currentAccountIndex];
+        const response = await fetch(`http://localhost:8081/api/transactions/${userEmail}/${currentAccount.id}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch transactions');
+        }
+        const transactionsData = await response.json();
+        console.log('Fetched transactions:', transactionsData);
+        setTransactions(transactionsData);
+      } else {
+        setTransactions([]);
       }
-      const transactionsData = await response.json();
-      setTransactions(transactionsData);
     } catch (error) {
       console.error('Error fetching transactions:', error);
-      // Fallback to demo data
-      setTransactions([
-        { id: 1, description: 'Grocery shopping', amount: -85.50, date: '2024-01-15', type: 'expense' },
-        { id: 2, description: 'Salary deposit', amount: 2500.00, date: '2024-01-10', type: 'income' },
-        { id: 3, description: 'Coffee shop', amount: -12.75, date: '2024-01-14', type: 'expense' }
-      ]);
+      // Don't use fallback demo data - just set empty array
+      setTransactions([]);
     }
   };
 
   // Create new account
-  const createAccount = async (accountData) => {
-    try {
-      const response = await fetch('http://localhost:8081/api/accounts', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...accountData,
-          username: username
-        })
-      });
+  const createAccount = async () => {
+    if (newAccount.name.trim()) {
+      try {
+        const response = await fetch(`http://localhost:8081/api/accounts/${userEmail}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: newAccount.name,
+            balance: parseFloat(newAccount.balance),
+            username: userEmail
+          })
+        });
 
-      if (!response.ok) {
-        throw new Error('Failed to create account');
+        if (!response.ok) {
+          throw new Error('Failed to create account');
+        }
+
+        const newAccountData = await response.json();
+        console.log('Created account:', newAccountData);
+        setAccounts(prev => [...prev, newAccountData]);
+        setNewAccount({ name: '', balance: '0' });
+        setShowAddAccount(false);
+      } catch (error) {
+        console.error('Error creating account:', error);
+        setError('Failed to create account');
       }
-
-      const newAccount = await response.json();
-      setAccounts(prev => [...prev, newAccount]);
-    } catch (error) {
-      console.error('Error creating account:', error);
-      setError('Failed to create account');
     }
   };
 
   // Load data on component mount
   useEffect(() => {
     fetchAccounts();
-    fetchTransactions();
   }, []);
+
+  // Fetch transactions when account changes
+  useEffect(() => {
+    if (accounts.length > 0) {
+      fetchTransactions();
+    }
+  }, [currentAccountIndex, accounts]);
 
   const currentAccount = accounts[currentAccountIndex] || { name: 'Loading...', balance: 0 };
 
@@ -114,16 +131,19 @@ function Dashboard() {
   const addTransaction = async () => {
     if (newTransaction.description && newTransaction.amount && newTransaction.accountId) {
       try {
+        console.log('Adding transaction with data:', newTransaction);
+        
         const transactionData = {
           description: newTransaction.description,
           amount: parseFloat(newTransaction.amount),
           date: new Date().toISOString().split('T')[0],
-          type: newTransaction.type,
-          accountId: newTransaction.accountId,
-          username: username
+          type: newTransaction.type
         };
 
-        const response = await fetch('http://localhost:8080/api/transactions', {
+        console.log('Sending transaction data:', transactionData);
+        console.log('URL:', `http://localhost:8081/api/transactions/${userEmail}/${newTransaction.accountId}`);
+
+        const response = await fetch(`http://localhost:8081/api/transactions/${userEmail}/${newTransaction.accountId}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -131,11 +151,17 @@ function Dashboard() {
           body: JSON.stringify(transactionData)
         });
 
+        console.log('Response status:', response.status);
+        console.log('Response ok:', response.ok);
+
         if (!response.ok) {
-          throw new Error('Failed to add transaction');
+          const errorText = await response.text();
+          console.error('Response error:', errorText);
+          throw new Error(`Failed to add transaction: ${errorText}`);
         }
 
         const savedTransaction = await response.json();
+        console.log('Saved transaction:', savedTransaction);
         
         // Add to local state
         setTransactions(prev => [savedTransaction, ...prev]);
@@ -215,6 +241,74 @@ function Dashboard() {
     );
   }
 
+  // Show message when no accounts exist
+  if (accounts.length === 0) {
+    return (
+      <div className="dashboard">
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+          flexDirection: 'column',
+          gap: '2rem'
+        }}>
+          <div style={{ fontSize: '1.5rem', color: '#f3f4f6', textAlign: 'center' }}>
+            Welcome to Finly!<br />
+            You don't have any accounts yet.
+          </div>
+          <button 
+            onClick={() => setShowAddAccount(true)}
+            style={{
+              padding: '1rem 2rem',
+              background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontSize: '1.1rem',
+              fontWeight: 'bold'
+            }}
+          >
+            Create Your First Account
+          </button>
+        </div>
+
+        {/* Add Account Modal */}
+        {showAddAccount && (
+          <div className="modal-overlay">
+            <div className="modal">
+              <h3>Create Your First Account</h3>
+              <div className="form-group">
+                <label>Account Name:</label>
+                <input
+                  type="text"
+                  value={newAccount.name}
+                  onChange={(e) => setNewAccount(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder="Enter account name"
+                />
+              </div>
+              <div className="form-group">
+                <label>Initial Balance:</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={newAccount.balance}
+                  onChange={(e) => setNewAccount(prev => ({ ...prev, balance: e.target.value }))}
+                  placeholder="Enter initial balance"
+                />
+              </div>
+              <div className="modal-buttons">
+                <button onClick={createAccount} className="save-btn">Create Account</button>
+                <button onClick={() => setShowAddAccount(false)} className="cancel-btn">Cancel</button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="dashboard">
       {/* Header with Account Selection */}
@@ -235,6 +329,22 @@ function Dashboard() {
           disabled={accounts.length <= 1}
         >
           &gt;
+        </button>
+        <button 
+          className="add-account-btn"
+          onClick={() => setShowAddAccount(true)}
+          style={{
+            marginLeft: '1rem',
+            padding: '0.5rem 1rem',
+            background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
+            color: 'white',
+            border: 'none',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            fontSize: '0.875rem'
+          }}
+        >
+          + Add Account
         </button>
       </div>
 
@@ -272,6 +382,38 @@ function Dashboard() {
           ))}
         </div>
       </div>
+
+      {/* Add Account Modal */}
+      {showAddAccount && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h3>Add New Account</h3>
+            <div className="form-group">
+              <label>Account Name:</label>
+              <input
+                type="text"
+                value={newAccount.name}
+                onChange={(e) => setNewAccount(prev => ({ ...prev, name: e.target.value }))}
+                placeholder="Enter account name"
+              />
+            </div>
+            <div className="form-group">
+              <label>Initial Balance:</label>
+              <input
+                type="number"
+                step="0.01"
+                value={newAccount.balance}
+                onChange={(e) => setNewAccount(prev => ({ ...prev, balance: e.target.value }))}
+                placeholder="Enter initial balance"
+              />
+            </div>
+            <div className="modal-buttons">
+              <button onClick={createAccount} className="save-btn">Create Account</button>
+              <button onClick={() => setShowAddAccount(false)} className="cancel-btn">Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Add Transaction Modal */}
       {showAddTransaction && (

@@ -385,6 +385,17 @@
   transform: translateY(-1px);
 }
 
+/* Dropdown options styling */
+.form-group select option {
+  background-color: #23272f;
+  color: #f3f4f6;
+  padding: 0.5rem;
+}
+
+.form-group select option:hover {
+  background-color: #1e3c72;
+}
+
 .modal-buttons {
   display: flex;
   gap: 1rem;
